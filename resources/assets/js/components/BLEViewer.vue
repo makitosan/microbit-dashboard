@@ -55,6 +55,23 @@
         </div><!-- //card mt-5-->
 
 
+        <div class="card mt-5">
+            <div class="card-header">
+                Magnetometer / Compass
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="mx-1 col border border-primary rounded text-right">{{mag_x}}</div>
+                    <div class="mx-1 col border border-primary rounded text-right">{{mag_y}}</div>
+                    <div class="mx-1 col border border-primary rounded text-right">{{mag_z}}</div>
+                </div>
+                <div class="row">
+                    <div class="mx-1 col border border-primary rounded text-right">{{bearing}}</div>
+                </div>
+            </div>
+        </div><!-- //card mt-5-->
+
+
     </div>
 </template>
 
@@ -68,12 +85,19 @@
                 ACCELEROMETERSERVICE_SERVICE_UUID       : 'e95d0753-251d-470a-a062-fa1922dfa9a8',
                 ACCELEROMETERDATA_CHARACTERISTIC_UUID   : 'e95dca4b-251d-470a-a062-fa1922dfa9a8',
                 ACCELEROMETERPERIOD_CHARACTERISTIC_UUID : 'e95dfb24-251d-470a-a062-fa1922dfa9a8',
+
                 BUTTON_SERVICE_UUID : 'e95d9882-251d-470a-a062-fa1922dfa9a8',
                 BUTTON_A_CHARACTERISTIC_UUID : 'e95dda90-251d-470a-a062-fa1922dfa9a8',
                 BUTTON_B_CHARACTERISTIC_UUID : 'e95dda91-251d-470a-a062-fa1922dfa9a8',
+
                 TEMPERATURE_SERVICE_UUID : 'e95d6100-251d-470a-a062-fa1922dfa9a8',
                 TEMPERATURE_CHARACTERISTIC_UUID : 'e95d9250-251d-470a-a062-fa1922dfa9a8',
                 TEMPERATUREPERIOD_CHARACTERISTIC_UUID : 'e95d1b25-251d-470a-a062-fa1922dfa9a8',
+
+                MAGNETOMETER_SERVICE_UUID : 'e95df2d8-251d-470a-a062-fa1922dfa9a8',
+                MAGNETOMETER_DATA_UUID    : 'e95dfb11-251d-470a-a062-fa1922dfa9a8',
+                MAGNETOMETER_PERIOD_UUID  : 'e95d386c-251d-470a-a062-fa1922dfa9a8',
+                MAGNETOMETER_COMPASS_UUID : 'e95d9715-251d-470a-a062-fa1922dfa9a8',
 
                 INTERVAL : 500, // interval msec for receiving event
 
@@ -86,10 +110,18 @@
 
                 temperature: 0,
 
+                bearing: 0,
+                mag_x: 0,
+                mag_y: 0,
+                mag_z: 0,
+
                 characteristic : null,
                 chara_button_a : null,
                 chara_button_b : null,
                 chara_temp : null,
+
+                chara_magnetometer : null,
+                chara_compass : null,
 
                 accelerometer_device: null
             }
@@ -115,7 +147,8 @@
                         return Promise.all([
                             server.getPrimaryService(this.ACCELEROMETERSERVICE_SERVICE_UUID),
                             server.getPrimaryService(this.BUTTON_SERVICE_UUID),
-                            server.getPrimaryService(this.TEMPERATURE_SERVICE_UUID)
+                            server.getPrimaryService(this.TEMPERATURE_SERVICE_UUID),
+                            server.getPrimaryService(this.MAGNETOMETER_SERVICE_UUID)
                         ]);
                     })
                     .then(service => {
@@ -126,8 +159,11 @@
                             service[1].getCharacteristic(this.BUTTON_A_CHARACTERISTIC_UUID),
                             service[1].getCharacteristic(this.BUTTON_B_CHARACTERISTIC_UUID),
                             service[2].getCharacteristic(this.TEMPERATURE_CHARACTERISTIC_UUID),
-                            service[2].getCharacteristic(this.TEMPERATUREPERIOD_CHARACTERISTIC_UUID)
-                        ]);
+                            service[2].getCharacteristic(this.TEMPERATUREPERIOD_CHARACTERISTIC_UUID),
+                            service[3].getCharacteristic(this.MAGNETOMETER_DATA_UUID),
+                            service[3].getCharacteristic(this.MAGNETOMETER_COMPASS_UUID),
+                            service[3].getCharacteristic(this.MAGNETOMETER_PERIOD_UUID)
+                    ]);
                     })
                     .then(chara => {
                         console.log("ACCELEROMETER:", chara);
@@ -150,6 +186,17 @@
                         this.chara_temp.addEventListener('characteristicvaluechanged',this.onTemperaturChanged);
 
                         chara[5].writeValue(new Uint16Array([this.INTERVAL])); // period
+
+                        this.chara_magnetometer = chara[6];
+                        this.chara_magnetometer.startNotifications();
+                        this.chara_magnetometer.addEventListener('characteristicvaluechanged',this.onMagnetometerChanged);
+
+                        this.chara_compass = chara[7];
+                        this.chara_compass.startNotifications();
+                        this.chara_compass.addEventListener('characteristicvaluechanged',this.onCompassChanged);
+
+                        chara[8].writeValue(new Uint16Array([this.INTERVAL])); // period
+
 
                     })
                     .catch(error => {
@@ -177,6 +224,14 @@
             onchangeBBtn: function(event) {
                 console.log(event);
                 this.button_b++;
+            },
+            onMagnetometerChanged: function(event) {
+                this.mag_x = event.target.value.getUint16(0)/1000.0;
+                this.mag_y = event.target.value.getUint16(2)/1000.0;
+                this.mag_z = event.target.value.getUint16(4)/1000.0;
+            },
+            onCompassChanged: function(event) {
+                this.bearing = event.target.value.getUint16(0, true);
             }
         }
     }
