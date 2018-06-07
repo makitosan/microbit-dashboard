@@ -245,12 +245,12 @@
                 this.temperature = event.target.value.getUint8(0, true);
             },
             onchangeABtn: function(event) {
-                console.log(event);
-                this.button_a++;
+                let swd = event.target.value.getUint8(0, true);
+                if (swd === 1) this.button_a++;
             },
             onchangeBBtn: function(event) {
-                console.log(event);
-                this.button_b++;
+                let swd = event.target.value.getUint8(0, true);
+                if (swd === 1) this.button_b++;
             },
             onMagnetometerChanged: function(event) {
                 this.mag_x = event.target.value.getUint16(0)/1000.0;
