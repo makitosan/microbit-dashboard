@@ -31,6 +31,19 @@
             </div>
         </div><!-- //card mt-5-->
 
+        <div class="card mt-5">
+            <div class="card-header">
+                A/B Button
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="mx-1 col border border-danger rounded text-right">{{button_a}}</div>
+                    <div class="mx-1 col border border-danger rounded text-right">{{button_b}}</div>
+                </div>
+            </div>
+        </div><!-- //card mt-5-->
+
+
     </div>
 </template>
 
@@ -51,7 +64,12 @@
                 a_y : 0,
                 a_z : 0,
 
+                button_a: 0,
+                button_b: 0,
+
                 characteristic : null,
+                chara_button_a : null,
+                chara_button_b : null,
                 accelerometer_device: null
             }
         },
@@ -61,7 +79,8 @@
                     filters: [{
                         namePrefix: 'BBC micro:bit',
                     }],
-                    optionalServices: [this.ACCELEROMETERSERVICE_SERVICE_UUID]
+                    optionalServices: [this.ACCELEROMETERSERVICE_SERVICE_UUID,
+                        this.BUTTON_SERVICE_UUID]
                 })
                     .then(device => {
                         this.accelerometer_device = device;
@@ -70,19 +89,33 @@
                     })
                     //ACCELEROMETER
                     .then(server =>{
-                        console.log("server", server)
-                        return server.getPrimaryService(this.ACCELEROMETERSERVICE_SERVICE_UUID);
+                        console.log("server", server);
+                        return Promise.all([
+                            server.getPrimaryService(this.ACCELEROMETERSERVICE_SERVICE_UUID),
+                            server.getPrimaryService(this.BUTTON_SERVICE_UUID)
+                        ]);
                     })
                     .then(service => {
-                        console.log("service", service)
-                        return service.getCharacteristic(this.ACCELEROMETERDATA_CHARACTERISTIC_UUID)
+                        console.log("service", service);
+                        return Promise.all([
+                            service[0].getCharacteristic(this.ACCELEROMETERDATA_CHARACTERISTIC_UUID),
+                            service[1].getCharacteristic(this.BUTTON_A_CHARACTERISTIC_UUID),
+                            service[1].getCharacteristic(this.BUTTON_B_CHARACTERISTIC_UUID)
+                        ]);
                     })
                     .then(chara => {
-                        console.log("ACCELEROMETER:", chara)
+                        console.log("ACCELEROMETER:", chara);
                         alert("BLE Connection Established");
-                        this.characteristic = chara;
+                        this.characteristic = chara[0];
                         this.characteristic.startNotifications();
                         this.characteristic.addEventListener('characteristicvaluechanged',this.onAccelerometerValueChanged);
+
+                        this.chara_button_a = chara[1];
+                        this.chara_button_a.startNotifications();
+                        this.chara_button_a.addEventListener('characteristicvaluechanged', this.onchangeABtn);
+                        this.chara_button_b = chara[2];
+                        this.chara_button_b.startNotifications();
+                        this.chara_button_b.addEventListener('characteristicvaluechanged', this.onchangeBBtn);
                     })
                     .catch(error => {
                         alert("Faild to establish BLE connection. Please try again.");
@@ -98,6 +131,14 @@
                 this.a_x = event.target.value.getUint16(0)/1000.0;
                 this.a_y = event.target.value.getUint16(2)/1000.0;
                 this.a_z = event.target.value.getUint16(4)/1000.0;
+            },
+            onchangeABtn: function() {
+                console.log("A Button");
+                this.button_a++;
+            },
+            onchangeBBtn: function() {
+                console.log("B Button");
+                this.button_b++;
             }
         }
     }
