@@ -129,7 +129,7 @@
                         console.log("ACCELEROMETER:", chara);
                         alert("BLE Connection Established");
                         this.characteristic = chara[0];
-                        this.characteristic.writeValue(new Uint16Array([INTERVAL]));
+                        this.characteristic.writeValue(new Uint16Array([this.INTERVAL]));
                         this.characteristic.startNotifications();
                         this.characteristic.addEventListener('characteristicvaluechanged',this.onAccelerometerValueChanged);
 
@@ -141,7 +141,7 @@
                         this.chara_button_b.addEventListener('characteristicvaluechanged', this.onchangeBBtn);
 
                         this.chara_temp = chara[3];
-                        this.chara_temp.writeValue(new Uint16Array([INTERVAL]));
+                        this.chara_temp.writeValue(new Uint16Array([this.INTERVAL]));
                         this.chara_temp.startNotifications();
                         this.chara_temp.addEventListener('characteristicvaluechanged',this.onTemperaturChanged);
 
