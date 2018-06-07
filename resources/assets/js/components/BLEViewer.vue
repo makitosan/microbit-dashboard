@@ -317,11 +317,11 @@
                 this.p2 = event.target.value[2].getUint8(0, true);
             },
             average : function(arr, fn) {
-                return sum(arr, fn)/arr.length;
+                return this.sum(arr, fn) / arr.length;
             },
             sum : function(arr, fn) {
                 if (fn) {
-                    return sum(arr.map(fn));
+                    return this.sum(arr.map(fn));
                 }
                 else {
                     return arr.reduce(function(prev, current, i, arr) {
