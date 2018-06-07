@@ -13,3 +13,8 @@ yarn-error.log
 .env
 
 composer.phar
+
+# https://qiita.com/llhrkll/items/513c23008b2596089a00
+# for heroku
+public/js
+public/css
