@@ -67,11 +67,13 @@
             return {
                 ACCELEROMETERSERVICE_SERVICE_UUID       : 'e95d0753-251d-470a-a062-fa1922dfa9a8',
                 ACCELEROMETERDATA_CHARACTERISTIC_UUID   : 'e95dca4b-251d-470a-a062-fa1922dfa9a8',
+                ACCELEROMETERPERIOD_CHARACTERISTIC_UUID : 'e95dfb24-251d-470a-a062-fa1922dfa9a8',
                 BUTTON_SERVICE_UUID : 'e95d9882-251d-470a-a062-fa1922dfa9a8',
                 BUTTON_A_CHARACTERISTIC_UUID : 'e95dda90-251d-470a-a062-fa1922dfa9a8',
                 BUTTON_B_CHARACTERISTIC_UUID : 'e95dda91-251d-470a-a062-fa1922dfa9a8',
                 TEMPERATURE_SERVICE_UUID : 'e95d6100-251d-470a-a062-fa1922dfa9a8',
                 TEMPERATURE_CHARACTERISTIC_UUID : 'e95d9250-251d-470a-a062-fa1922dfa9a8',
+                TEMPERATUREPERIOD_CHARACTERISTIC_UUID : 'e95d1b25-251d-470a-a062-fa1922dfa9a8',
 
                 INTERVAL : 500, // interval msec for receiving event
 
@@ -120,30 +122,34 @@
                         console.log("service", service);
                         return Promise.all([
                             service[0].getCharacteristic(this.ACCELEROMETERDATA_CHARACTERISTIC_UUID),
+                            service[0].getCharacteristic(this.ACCELEROMETERPERIOD_CHARACTERISTIC_UUID),
                             service[1].getCharacteristic(this.BUTTON_A_CHARACTERISTIC_UUID),
                             service[1].getCharacteristic(this.BUTTON_B_CHARACTERISTIC_UUID),
-                            service[2].getCharacteristic(this.TEMPERATURE_CHARACTERISTIC_UUID)
+                            service[2].getCharacteristic(this.TEMPERATURE_CHARACTERISTIC_UUID),
+                            service[2].getCharacteristic(this.TEMPERATUREPERIOD_CHARACTERISTIC_UUID)
                         ]);
                     })
                     .then(chara => {
                         console.log("ACCELEROMETER:", chara);
                         alert("BLE Connection Established");
                         this.characteristic = chara[0];
-                        this.characteristic.writeValue(new Uint16Array([this.INTERVAL]));
                         this.characteristic.startNotifications();
                         this.characteristic.addEventListener('characteristicvaluechanged',this.onAccelerometerValueChanged);
 
-                        this.chara_button_a = chara[1];
+                        chara[1].writeValue(new Uint16Array([this.INTERVAL])); // period
+
+                        this.chara_button_a = chara[2];
                         this.chara_button_a.startNotifications();
                         this.chara_button_a.addEventListener('characteristicvaluechanged', this.onchangeABtn);
-                        this.chara_button_b = chara[2];
+                        this.chara_button_b = chara[3];
                         this.chara_button_b.startNotifications();
                         this.chara_button_b.addEventListener('characteristicvaluechanged', this.onchangeBBtn);
 
-                        this.chara_temp = chara[3];
-                        this.chara_temp.writeValue(new Uint16Array([this.INTERVAL]));
+                        this.chara_temp = chara[4];
                         this.chara_temp.startNotifications();
                         this.chara_temp.addEventListener('characteristicvaluechanged',this.onTemperaturChanged);
+
+                        chara[5].writeValue(new Uint16Array([this.INTERVAL])); // period
 
                     })
                     .catch(error => {
