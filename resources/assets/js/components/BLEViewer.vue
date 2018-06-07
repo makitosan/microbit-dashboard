@@ -134,7 +134,8 @@
                     }],
                     optionalServices: [this.ACCELEROMETERSERVICE_SERVICE_UUID,
                         this.BUTTON_SERVICE_UUID,
-                        this.TEMPERATURE_SERVICE_UUID]
+                        this.TEMPERATURE_SERVICE_UUID,
+                        this.MAGNETOMETER_SERVICE_UUID]
                 })
                     .then(device => {
                         this.accelerometer_device = device;
