@@ -14,6 +14,7 @@
 <body>
 <div id="app">
     <example-component></example-component>
+    <ble-viewer></ble-viewer>
     <div class="container">
         <div class="card">
             <div class="card-header">
