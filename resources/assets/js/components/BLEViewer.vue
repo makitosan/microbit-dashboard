@@ -54,7 +54,6 @@
             </div>
         </div><!-- //card mt-5-->
 
-
         <div class="card mt-5">
             <div class="card-header">
                 Magnetometer / Compass
@@ -65,12 +64,24 @@
                     <div class="mx-1 col border border-primary rounded text-right">{{mag_y}}</div>
                     <div class="mx-1 col border border-primary rounded text-right">{{mag_z}}</div>
                 </div>
-                <div class="row">
+                <div class="row mt-1">
                     <div class="mx-1 col border border-primary rounded text-right">{{bearing}}</div>
                 </div>
             </div>
         </div><!-- //card mt-5-->
 
+        <div class="card mt-5">
+            <div class="card-header">
+                IO Pin
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="mx-1 col border border-primary rounded text-right">{{p0}}</div>
+                    <div class="mx-1 col border border-primary rounded text-right">{{p1}}</div>
+                    <div class="mx-1 col border border-primary rounded text-right">{{p2}}</div>
+                </div>
+            </div>
+        </div><!-- //card mt-5-->
 
     </div>
 </template>
@@ -99,6 +110,9 @@
                 MAGNETOMETER_PERIOD_UUID  : 'e95d386c-251d-470a-a062-fa1922dfa9a8',
                 MAGNETOMETER_COMPASS_UUID : 'e95d9715-251d-470a-a062-fa1922dfa9a8',
 
+                IO_PIN_SERVICE_UUID : 'e95d127b-251d-470a-a062-fa1922dfa9a8',
+                IO_PIN_DATA_CHARACTERISTIC_UUID : 'e95d8d00-251d-470a-a062-fa1922dfa9a8',
+
                 INTERVAL : 500, // interval msec for receiving event
 
                 a_x : 0,
@@ -115,6 +129,10 @@
                 mag_y: 0,
                 mag_z: 0,
 
+                p0: 0,
+                p1: 0,
+                p2: 0,
+
                 characteristic : null,
                 chara_button_a : null,
                 chara_button_b : null,
@@ -122,6 +140,8 @@
 
                 chara_magnetometer : null,
                 chara_compass : null,
+
+                io_pin : null,
 
                 accelerometer_device: null
             }
@@ -135,7 +155,8 @@
                     optionalServices: [this.ACCELEROMETERSERVICE_SERVICE_UUID,
                         this.BUTTON_SERVICE_UUID,
                         this.TEMPERATURE_SERVICE_UUID,
-                        this.MAGNETOMETER_SERVICE_UUID]
+                        this.MAGNETOMETER_SERVICE_UUID,
+                        this.IO_PIN_SERVICE_UUID]
                 })
                     .then(device => {
                         this.accelerometer_device = device;
@@ -149,7 +170,8 @@
                             server.getPrimaryService(this.ACCELEROMETERSERVICE_SERVICE_UUID),
                             server.getPrimaryService(this.BUTTON_SERVICE_UUID),
                             server.getPrimaryService(this.TEMPERATURE_SERVICE_UUID),
-                            server.getPrimaryService(this.MAGNETOMETER_SERVICE_UUID)
+                            server.getPrimaryService(this.MAGNETOMETER_SERVICE_UUID),
+                            server.getPrimaryService(this.IO_PIN_SERVICE_UUID)
                         ]);
                     })
                     .then(service => {
@@ -163,7 +185,8 @@
                             service[2].getCharacteristic(this.TEMPERATUREPERIOD_CHARACTERISTIC_UUID),
                             service[3].getCharacteristic(this.MAGNETOMETER_DATA_UUID),
                             service[3].getCharacteristic(this.MAGNETOMETER_COMPASS_UUID),
-                            service[3].getCharacteristic(this.MAGNETOMETER_PERIOD_UUID)
+                            service[3].getCharacteristic(this.MAGNETOMETER_PERIOD_UUID),
+                            service[4].getCharacteristic(this.IO_PIN_DATA_CHARACTERISTIC_UUID)
                     ]);
                     })
                     .then(chara => {
@@ -198,6 +221,9 @@
 
                         chara[8].writeValue(new Uint16Array([this.INTERVAL])); // period
 
+                        this.io_pin = chara[9];
+                        this.io_pin.startNotifications();
+                        this.io_pin.addEventListener('characteristicvaluechanged',this.onIOPinChanged);
 
                     })
                     .catch(error => {
@@ -233,6 +259,12 @@
             },
             onCompassChanged: function(event) {
                 this.bearing = event.target.value.getUint16(0, true);
+            },
+            onIOPinChanged: function(event) {
+                console.log(event);
+                this.p0 = event.target.value[0].getUint8(0, true);
+                this.p1 = event.target.value[1].getUint8(0, true);
+                this.p2 = event.target.value[2].getUint8(0, true);
             }
         }
     }
