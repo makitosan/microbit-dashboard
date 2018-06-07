@@ -73,6 +73,8 @@
                 TEMPERATURE_SERVICE_UUID : 'e95d6100-251d-470a-a062-fa1922dfa9a8',
                 TEMPERATURE_CHARACTERISTIC_UUID : 'e95d9250-251d-470a-a062-fa1922dfa9a8',
 
+                INTERVAL : 500, // interval msec for receiving event
+
                 a_x : 0,
                 a_y : 0,
                 a_z : 0,
@@ -127,6 +129,7 @@
                         console.log("ACCELEROMETER:", chara);
                         alert("BLE Connection Established");
                         this.characteristic = chara[0];
+                        this.characteristic.writeValue(new Uint16Array([INTERVAL]));
                         this.characteristic.startNotifications();
                         this.characteristic.addEventListener('characteristicvaluechanged',this.onAccelerometerValueChanged);
 
@@ -138,6 +141,7 @@
                         this.chara_button_b.addEventListener('characteristicvaluechanged', this.onchangeBBtn);
 
                         this.chara_temp = chara[3];
+                        this.chara_temp.writeValue(new Uint16Array([INTERVAL]));
                         this.chara_temp.startNotifications();
                         this.chara_temp.addEventListener('characteristicvaluechanged',this.onTemperaturChanged);
 
@@ -158,12 +162,14 @@
                 this.a_z = event.target.value.getUint16(4)/1000.0;
             },
             onTemperaturChanged: function(event) {
-                this.temperature = event.target.value;
+                this.temperature = event.target.value.getUint8(0, true);
             },
             onchangeABtn: function(event) {
+                console.log(event);
                 this.button_a++;
             },
             onchangeBBtn: function(event) {
+                console.log(event);
                 this.button_b++;
             }
         }
