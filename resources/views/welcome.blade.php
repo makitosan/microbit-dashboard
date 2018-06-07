@@ -1,97 +1,116 @@
-<!doctype html>
-<html lang="{{ app()->getLocale() }}">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <title>Microbit Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ mix('css/app.css') }}">
 
-        <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+    <title>mirobit: web bluetooth API example</title>
+</head>
 
-        <!-- Styles -->
-        <style>
-            html, body {
-                background-color: #fff;
-                color: #636b6f;
-                font-family: 'Raleway', sans-serif;
-                font-weight: 100;
-                height: 100vh;
-                margin: 0;
-            }
-
-            .full-height {
-                height: 100vh;
-            }
-
-            .flex-center {
-                align-items: center;
-                display: flex;
-                justify-content: center;
-            }
-
-            .position-ref {
-                position: relative;
-            }
-
-            .top-right {
-                position: absolute;
-                right: 10px;
-                top: 18px;
-            }
-
-            .content {
-                text-align: center;
-            }
-
-            .title {
-                font-size: 84px;
-            }
-
-            .links > a {
-                color: #636b6f;
-                padding: 0 25px;
-                font-size: 12px;
-                font-weight: 600;
-                letter-spacing: .1rem;
-                text-decoration: none;
-                text-transform: uppercase;
-            }
-
-            .m-b-md {
-                margin-bottom: 30px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    @auth
-                        <a href="{{ url('/home') }}">Home</a>
-                    @else
-                        <a href="{{ route('login') }}">Login</a>
-                        <a href="{{ route('register') }}">Register</a>
-                    @endauth
-                </div>
-            @endif
-
-            <div class="content">
-                <div class="title m-b-md">
-                    Laravel
-                </div>
-
-                <div class="links">
-                    <a href="https://laravel.com/docs">Documentation</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
-                </div>
-            </div>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            Special Thanks
         </div>
-        <script src="{{ mix('/js/manifest.js') }}"></script>
-        <script src="{{ mix('/js/vendor.js') }}"></script>
-        <script src="{{ mix('/js/app.js') }}"></script>
-    </body>
+        <div class="card-body">
+            <h5 class="card-title">Inspired by @yokmama</h5>
+            <p class="card-text">To connect BLE devise via Web Bluetooth API is a little bit time consuming.
+                The following @yokmama's article helped me a lot. Thank you very much.</p>
+            <p>
+                <a href="https://qiita.com/yokmama/items/5522fabfb5b9623278e2" class="" target="_blank">
+                    https://qiita.com/yokmama/items/5522fabfb5b9623278e2
+                </a>
+            </p>
+        </div>
+    </div><!-- //card -->
+    <div class="card mt-5">
+        <div class="card-header">
+            Accelerator
+        </div>
+        <div class="card-body">
+            <form name="js">
+                <input type="button" value="CONNECT" onclick="connect();"/>
+                <input type="button" value="DISCONNECT" onclick="disconnect();" />
+                X:<input type="text" name="x" value="" />
+                Y:<input type="text" name="y" value="" />
+                Z:<input type="text" name="z" value="" />
+            </form>
+        </div>
+    </div><!-- //card mt-5-->
+</div>
+<script>
+    var accelerometer_device;
+    var accelerometer_characteristic;
+
+    //micro:bit BLE UUID
+    var ACCELEROMETERSERVICE_SERVICE_UUID       = 'e95d0753-251d-470a-a062-fa1922dfa9a8';
+    var ACCELEROMETERDATA_CHARACTERISTIC_UUID   = 'e95dca4b-251d-470a-a062-fa1922dfa9a8';
+
+
+    function connect() {
+        navigator.bluetooth.requestDevice({
+            filters: [{
+                namePrefix: 'BBC micro:bit',
+            }],
+            optionalServices: [ACCELEROMETERSERVICE_SERVICE_UUID]
+        })
+            .then(device => {
+                accelerometer_device = device;
+                console.log("device", device);
+                return device.gatt.connect();
+            })
+            //ACCELEROMETER
+            .then(server =>{
+                console.log("server", server)
+                return server.getPrimaryService(ACCELEROMETERSERVICE_SERVICE_UUID);
+            })
+            .then(service => {
+                console.log("service", service)
+                return service.getCharacteristic(ACCELEROMETERDATA_CHARACTERISTIC_UUID)
+            })
+            .then(chara => {
+                console.log("ACCELEROMETER:", chara)
+                alert("BLE接続が完了しました。");
+                characteristic = chara;
+                characteristic.startNotifications();
+                characteristic.addEventListener('characteristicvaluechanged',onAccelerometerValueChanged);
+            })
+            .catch(error => {
+                alert("Faild to establish BLE connection. Please try again.");
+                console.log(error);
+            });
+    }
+
+    function onAccelerometerValueChanged(event) {
+        AcceleratorX = event.target.value.getUint16(0)/1000.0;
+        console.log('x:' + AcceleratorX);
+        document.js.x.value = AcceleratorX;
+
+        AcceleratorY = event.target.value.getUint16(2)/1000.0;
+        console.log('y:' + AcceleratorY);
+        document.js.y.value = AcceleratorY;
+
+        AcceleratorZ = event.target.value.getUint16(4)/1000.0;
+        console.log('z:' + AcceleratorZ);
+        document.js.z.value = AcceleratorZ;
+
+    }
+
+    function disconnect() {
+        if (!accelerometer_device || !accelerometer_device.gatt.connected) return ;
+        accelerometer_device.gatt.disconnect();
+        alert("BLE connection established ;)")
+    }
+
+</script>
+<script src="{{ mix('/js/manifest.js') }}"></script>
+<script src="{{ mix('/js/vendor.js') }}"></script>
+<script src="{{ mix('/js/app.js') }}"></script>
+</body>
 </html>
+
