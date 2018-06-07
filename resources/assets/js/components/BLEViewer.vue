@@ -64,7 +64,7 @@
                     optionalServices: [this.ACCELEROMETERSERVICE_SERVICE_UUID]
                 })
                     .then(device => {
-                        accelerometer_device = device;
+                        this.accelerometer_device = device;
                         console.log("device", device);
                         return device.gatt.connect();
                     })
