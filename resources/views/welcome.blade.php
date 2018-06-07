@@ -12,37 +12,41 @@
 </head>
 
 <body>
-<div class="container">
-    <div class="card">
-        <div class="card-header">
-            Special Thanks
-        </div>
-        <div class="card-body">
-            <h5 class="card-title">Inspired by @yokmama</h5>
-            <p class="card-text">To connect BLE devise via Web Bluetooth API is a little bit time consuming.
-                The following @yokmama's article helped me a lot. Thank you very much.</p>
-            <p>
-                <a href="https://qiita.com/yokmama/items/5522fabfb5b9623278e2" class="" target="_blank">
-                    https://qiita.com/yokmama/items/5522fabfb5b9623278e2
-                </a>
-            </p>
-        </div>
-    </div><!-- //card -->
-    <div class="card mt-5">
-        <div class="card-header">
-            Accelerator
-        </div>
-        <div class="card-body">
-            <form name="js">
-                <input type="button" value="CONNECT" onclick="connect();"/>
-                <input type="button" value="DISCONNECT" onclick="disconnect();" />
-                X:<input type="text" name="x" value="" />
-                Y:<input type="text" name="y" value="" />
-                Z:<input type="text" name="z" value="" />
-            </form>
-        </div>
-    </div><!-- //card mt-5-->
-</div>
+<div id="app">
+    <example-component></example-component>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                Special Thanks
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Inspired by @yokmama</h5>
+                <p class="card-text">To connect BLE devise via Web Bluetooth API is a little bit time consuming.
+                    The following @yokmama's article helped me a lot. Thank you very much.</p>
+                <p>
+                    <a href="https://qiita.com/yokmama/items/5522fabfb5b9623278e2" class="" target="_blank">
+                        https://qiita.com/yokmama/items/5522fabfb5b9623278e2
+                    </a>
+                </p>
+            </div>
+        </div><!-- //card -->
+        <div class="card mt-5">
+            <div class="card-header">
+                Accelerator
+            </div>
+            <div class="card-body">
+                <form name="js">
+                    <input type="button" value="CONNECT" onclick="connect();"/>
+                    <input type="button" value="DISCONNECT" onclick="disconnect();" />
+                    X:<input type="text" name="x" value="" />
+                    Y:<input type="text" name="y" value="" />
+                    Z:<input type="text" name="z" value="" />
+                </form>
+            </div>
+        </div><!-- //card mt-5-->
+    </div>
+</div><!-- // #app end -->
+
 <script>
     var accelerometer_device;
     var accelerometer_characteristic;
@@ -50,6 +54,11 @@
     //micro:bit BLE UUID
     var ACCELEROMETERSERVICE_SERVICE_UUID       = 'e95d0753-251d-470a-a062-fa1922dfa9a8';
     var ACCELEROMETERDATA_CHARACTERISTIC_UUID   = 'e95dca4b-251d-470a-a062-fa1922dfa9a8';
+
+    var BUTTON_SERVICE_UUID = 'e95d9882-251d-470a-a062-fa1922dfa9a8';
+    var BUTTON_A_CHARACTERISTIC_UUID = 'e95dda90-251d-470a-a062-fa1922dfa9a8';
+    var BUTTON_B_CHARACTERISTIC_UUID = 'e95dda91-251d-470a-a062-fa1922dfa9a8';
+
 
 
     function connect() {
