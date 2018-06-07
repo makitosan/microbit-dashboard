@@ -241,6 +241,11 @@
                         this.io_pin.addEventListener('characteristicvaluechanged',this.onIOPinChanged);
 
                         this.intervalid = setInterval(function(){
+                            console.log('interval fired...');
+                            console.log(this.total_a_x);
+                            console.log(this.total_a_y);
+                            console.log(this.total_a_z);
+                            
                             // calc average
                             let tmp_a_x = [], tmp_a_y = [], tmp_a_z = [];
                             this.total_a_x.forEach(function(elm) {
