@@ -5,8 +5,16 @@
                 CONNECT / DISCONNECT
             </div>
             <div class="card-body">
-                <button type="button" class="form-control btn-primary" v-on:click="connect">CONNECT</button>
-                <button type="button" class="form-control btn-default" v-on:click="disconnect" >DISCONNECT</button>
+                <form>
+                    <div class="form-row">
+                        <div class="col">
+                            <button type="button" class="btn btn-primary btn-block" v-on:click="connect">CONNECT</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" class="btn btn-light btn-block" v-on:click="disconnect">DISCONNECT</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div><!-- //card mt-5-->
 
@@ -15,9 +23,11 @@
                 Accelerator
             </div>
             <div class="card-body">
-                <span class="border border-primary rounded">{{a_x}}</span>
-                <span class="border border-primary rounded">{{a_y}}</span>
-                <span class="border border-primary rounded">{{a_z}}</span>
+                <div class="row">
+                    <div class="mx-1 col border border-primary rounded text-right">{{a_x}}</div>
+                    <div class="mx-1 col border border-primary rounded text-right">{{a_y}}</div>
+                    <div class="mx-1 col border border-primary rounded text-right">{{a_z}}</div>
+                </div>
             </div>
         </div><!-- //card mt-5-->
 
