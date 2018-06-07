@@ -245,7 +245,7 @@
                             console.log(this.total_a_x);
                             console.log(this.total_a_y);
                             console.log(this.total_a_z);
-                            
+
                             // calc average
                             let tmp_a_x = [], tmp_a_y = [], tmp_a_z = [];
                             this.total_a_x.forEach(function(elm) {
@@ -274,7 +274,7 @@
                             }
 
                             // invoke save API
-                        }.bind(this), 1000);
+                        }.bind(this), 10000);
                     })
                     .catch(error => {
                         alert("Faild to establish BLE connection. Please try again.");
