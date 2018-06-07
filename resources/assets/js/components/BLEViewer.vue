@@ -1,16 +1,5 @@
 <template>
     <div class="container">
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="panel panel-default">
-                    <div class="panel-heading">Example Component</div>
-
-                    <div class="panel-body">
-                        <button v-on:click="connectDevice">CONNECT</button>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="card mt-5">
             <div class="card-header">
                 CONNECT / DISCONNECT
