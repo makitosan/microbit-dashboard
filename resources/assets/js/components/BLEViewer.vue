@@ -28,6 +28,11 @@
                     <div class="mx-1 col border border-primary rounded text-right">{{a_y}}</div>
                     <div class="mx-1 col border border-primary rounded text-right">{{a_z}}</div>
                 </div>
+                <div class="row mt-1">
+                    <div class="mx-1 col border border-primary rounded text-right">{{ave_a_x}}</div>
+                    <div class="mx-1 col border border-primary rounded text-right">{{ave_a_y}}</div>
+                    <div class="mx-1 col border border-primary rounded text-right">{{ave_a_z}}</div>
+                </div>
             </div>
         </div><!-- //card mt-5-->
 
@@ -119,6 +124,14 @@
                 a_y : 0,
                 a_z : 0,
 
+                ave_a_x : 0,
+                ave_a_y : 0,
+                ave_a_z : 0,
+
+                total_a_x : [],
+                total_a_y : [],
+                total_a_z : [],
+
                 button_a: 0,
                 button_b: 0,
 
@@ -143,7 +156,9 @@
 
                 io_pin : null,
 
-                accelerometer_device: null
+                accelerometer_device: null,
+
+                intervalid: 0
             }
         },
         methods: {
@@ -225,6 +240,36 @@
                         this.io_pin.startNotifications();
                         this.io_pin.addEventListener('characteristicvaluechanged',this.onIOPinChanged);
 
+                        this.intervalid = setInterval(function(){
+                            // calc average
+                            let tmp_a_x = [], tmp_a_y = [], tmp_a_z = [];
+                            this.total_a_x.forEach(function(elm) {
+                                tmp_a_x.push(elm);
+                            });
+                            this.total_a_y.forEach(function(elm) {
+                                tmp_a_y.push(elm);
+                            });
+                            this.total_a_z.forEach(function(elm) {
+                                tmp_a_z.push(elm);
+                            });
+
+                            this.ave_a_x = this.average(tmp_a_x);
+                            this.ave_a_y = this.average(tmp_a_y);
+                            this.ave_a_z = this.average(tmp_a_z);
+
+                            // reduce to recent 20 elements
+                            if (this.total_a_x.length > 20) {
+                                this.total_a_x.splice(0, this.total_a_x.length - 20);
+                            }
+                            if (this.total_a_y.length > 20) {
+                                this.total_a_y.splice(0, this.total_a_y.length - 20);
+                            }
+                            if (this.total_a_z.length > 20) {
+                                this.total_a_z.splice(0, this.total_a_z.length - 20);
+                            }
+
+                            // invoke save API
+                        }.bind(this), 1000);
                     })
                     .catch(error => {
                         alert("Faild to establish BLE connection. Please try again.");
@@ -235,11 +280,16 @@
                 if (!this.accelerometer_device || !this.accelerometer_device.gatt.connected) return ;
                 this.accelerometer_device.gatt.disconnect();
                 alert("BLE connection disconnected ;)");
+                clearInterval(this.intervalid);
             },
             onAccelerometerValueChanged: function(event) {
                 this.a_x = event.target.value.getUint16(0)/1000.0;
                 this.a_y = event.target.value.getUint16(2)/1000.0;
                 this.a_z = event.target.value.getUint16(4)/1000.0;
+
+                this.total_a_x.push(this.a_x);
+                this.total_a_y.push(this.a_y);
+                this.total_a_z.push(this.a_z);
             },
             onTemperaturChanged: function(event) {
                 this.temperature = event.target.value.getUint8(0, true);
@@ -265,6 +315,19 @@
                 this.p0 = event.target.value[0].getUint8(0, true);
                 this.p1 = event.target.value[1].getUint8(0, true);
                 this.p2 = event.target.value[2].getUint8(0, true);
+            },
+            average : function(arr, fn) {
+                return sum(arr, fn)/arr.length;
+            },
+            sum : function(arr, fn) {
+                if (fn) {
+                    return sum(arr.map(fn));
+                }
+                else {
+                    return arr.reduce(function(prev, current, i, arr) {
+                        return prev+current;
+                    });
+                }
             }
         }
     }
