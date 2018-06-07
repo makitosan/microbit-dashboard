@@ -11,6 +11,27 @@
                 </div>
             </div>
         </div>
+        <div class="card mt-5">
+            <div class="card-header">
+                CONNECT / DISCONNECT
+            </div>
+            <div class="card-body">
+                <button type="button" class="form-control btn-primary" v-on:click="connect">CONNECT</button>
+                <button type="button" class="form-control btn-default" v-on:click="disconnect" >DISCONNECT</button>
+            </div>
+        </div><!-- //card mt-5-->
+
+        <div class="card mt-5">
+            <div class="card-header">
+                Accelerator
+            </div>
+            <div class="card-body">
+                <span class="border border-primary rounded">{{a_x}}</span>
+                <span class="border border-primary rounded">{{a_y}}</span>
+                <span class="border border-primary rounded">{{a_z}}</span>
+            </div>
+        </div><!-- //card mt-5-->
+
     </div>
 </template>
 
@@ -29,11 +50,14 @@
 
                 a_x : 0,
                 a_y : 0,
-                a_z : 0
+                a_z : 0,
+
+                characteristic : null,
+                accelerometer_device: null
             }
         },
         methods: {
-            connectDevice: function(){
+            connect: function(){
                 navigator.bluetooth.requestDevice({
                     filters: [{
                         namePrefix: 'BBC micro:bit',
@@ -57,14 +81,19 @@
                     .then(chara => {
                         console.log("ACCELEROMETER:", chara)
                         alert("BLE Connection Established");
-                        characteristic = chara;
-                        characteristic.startNotifications();
-                        characteristic.addEventListener('characteristicvaluechanged',this.onAccelerometerValueChanged);
+                        this.characteristic = chara;
+                        this.characteristic.startNotifications();
+                        this.characteristic.addEventListener('characteristicvaluechanged',this.onAccelerometerValueChanged);
                     })
                     .catch(error => {
                         alert("Faild to establish BLE connection. Please try again.");
                         console.log(error);
                     });
+            },
+            disconnect: function() {
+                if (!this.accelerometer_device || !this.accelerometer_device.gatt.connected) return ;
+                this.accelerometer_device.gatt.disconnect();
+                alert("BLE connection disconnected ;)");
             },
             onAccelerometerValueChanged: function(event) {
                 this.a_x = event.target.value.getUint16(0)/1000.0;
