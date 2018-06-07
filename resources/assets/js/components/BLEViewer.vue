@@ -43,6 +43,17 @@
             </div>
         </div><!-- //card mt-5-->
 
+        <div class="card mt-5">
+            <div class="card-header">
+                Temperatue
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="mx-1 col border border-danger rounded text-right">{{temperature}}</div>
+                </div>
+            </div>
+        </div><!-- //card mt-5-->
+
 
     </div>
 </template>
@@ -59,6 +70,8 @@
                 BUTTON_SERVICE_UUID : 'e95d9882-251d-470a-a062-fa1922dfa9a8',
                 BUTTON_A_CHARACTERISTIC_UUID : 'e95dda90-251d-470a-a062-fa1922dfa9a8',
                 BUTTON_B_CHARACTERISTIC_UUID : 'e95dda91-251d-470a-a062-fa1922dfa9a8',
+                TEMPERATURE_SERVICE_UUID : 'e95d6100-251d-470a-a062-fa1922dfa9a8',
+                TEMPERATURE_CHARACTERISTIC_UUID : 'e95d9250-251d-470a-a062-fa1922dfa9a8',
 
                 a_x : 0,
                 a_y : 0,
@@ -67,9 +80,13 @@
                 button_a: 0,
                 button_b: 0,
 
+                temperature: 0,
+
                 characteristic : null,
                 chara_button_a : null,
                 chara_button_b : null,
+                chara_temp : null,
+
                 accelerometer_device: null
             }
         },
@@ -80,7 +97,8 @@
                         namePrefix: 'BBC micro:bit',
                     }],
                     optionalServices: [this.ACCELEROMETERSERVICE_SERVICE_UUID,
-                        this.BUTTON_SERVICE_UUID]
+                        this.BUTTON_SERVICE_UUID,
+                        this.TEMPERATURE_SERVICE_UUID]
                 })
                     .then(device => {
                         this.accelerometer_device = device;
@@ -92,7 +110,8 @@
                         console.log("server", server);
                         return Promise.all([
                             server.getPrimaryService(this.ACCELEROMETERSERVICE_SERVICE_UUID),
-                            server.getPrimaryService(this.BUTTON_SERVICE_UUID)
+                            server.getPrimaryService(this.BUTTON_SERVICE_UUID),
+                            server.getPrimaryService(this.TEMPERATURE_SERVICE_UUID)
                         ]);
                     })
                     .then(service => {
@@ -100,7 +119,8 @@
                         return Promise.all([
                             service[0].getCharacteristic(this.ACCELEROMETERDATA_CHARACTERISTIC_UUID),
                             service[1].getCharacteristic(this.BUTTON_A_CHARACTERISTIC_UUID),
-                            service[1].getCharacteristic(this.BUTTON_B_CHARACTERISTIC_UUID)
+                            service[1].getCharacteristic(this.BUTTON_B_CHARACTERISTIC_UUID),
+                            service[2].getCharacteristic(this.TEMPERATURE_CHARACTERISTIC_UUID)
                         ]);
                     })
                     .then(chara => {
@@ -116,6 +136,11 @@
                         this.chara_button_b = chara[2];
                         this.chara_button_b.startNotifications();
                         this.chara_button_b.addEventListener('characteristicvaluechanged', this.onchangeBBtn);
+
+                        this.chara_temp = chara[3];
+                        this.chara_temp.startNotifications();
+                        this.chara_temp.addEventListener('characteristicvaluechanged',this.onTemperaturChanged);
+
                     })
                     .catch(error => {
                         alert("Faild to establish BLE connection. Please try again.");
@@ -132,12 +157,13 @@
                 this.a_y = event.target.value.getUint16(2)/1000.0;
                 this.a_z = event.target.value.getUint16(4)/1000.0;
             },
-            onchangeABtn: function() {
-                console.log("A Button");
+            onTemperaturChanged: function(event) {
+                this.temperature = event.target.value;
+            },
+            onchangeABtn: function(event) {
                 this.button_a++;
             },
-            onchangeBBtn: function() {
-                console.log("B Button");
+            onchangeBBtn: function(event) {
                 this.button_b++;
             }
         }
