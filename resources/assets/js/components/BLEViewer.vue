@@ -14,6 +14,11 @@
                             <button type="button" class="btn btn-light btn-block" v-on:click="disconnect">DISCONNECT</button>
                         </div>
                     </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <button type="button" class="btn btn-primary btn-block" v-on:click="addData">ADD DATA</button>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div><!-- //card mt-5-->
@@ -29,9 +34,9 @@
                     <div class="mx-1 col border border-primary rounded text-right">{{a_z}}</div>
                 </div>
                 <div class="row mt-1">
-                    <div class="mx-1 col border border-primary rounded text-right">{{ave_a_x}}</div>
-                    <div class="mx-1 col border border-primary rounded text-right">{{ave_a_y}}</div>
-                    <div class="mx-1 col border border-primary rounded text-right">{{ave_a_z}}</div>
+                    <div class="mx-1 col border border-primary rounded text-right">{{ave_a_x.value}}</div>
+                    <div class="mx-1 col border border-primary rounded text-right">{{ave_a_y.value}}</div>
+                    <div class="mx-1 col border border-primary rounded text-right">{{ave_a_z.value}}</div>
                 </div>
             </div>
         </div><!-- //card mt-5-->
@@ -93,6 +98,27 @@
 
 <script>
     export default {
+        created() {
+            let ctx = document.getElementById('myChart').getContext('2d');
+            this.chart = new Chart(ctx, {
+                type: 'line',
+                data: { datasets: [
+                        { label: 'x',
+                            borderColor: 'rgb(255, 0, 0)',
+                            data: [] },
+                        { label: 'y',
+                            borderColor: 'rgb(0, 255, 0)',
+                            data: [] },
+                        { label: 'z',
+                            borderColor: 'rgb(0, 0, 255)',
+                            data: []}
+                    ] },
+                options: {
+                    scales: { xAxes: [{ type: 'realtime' }] },
+                    plugins: { streaming: { onRefresh: this.onRefresh, delay: 2000 } }
+                }
+            });
+        },
         mounted() {
             console.log('Component mounted.')
         },
@@ -120,13 +146,15 @@
 
                 INTERVAL : 500, // interval msec for receiving event
 
+                chart: null,
+
                 a_x : 0,
                 a_y : 0,
                 a_z : 0,
 
-                ave_a_x : 0,
-                ave_a_y : 0,
-                ave_a_z : 0,
+                ave_a_x : {time: Date.now(), value: 0},
+                ave_a_y : {time: Date.now(), value: 0},
+                ave_a_z : {time: Date.now(), value: 0},
 
                 total_a_x : [],
                 total_a_y : [],
@@ -162,6 +190,17 @@
             }
         },
         methods: {
+            addData: function(){
+                let now = Date.now();
+                this.ave_a_x.time = now;
+                this.ave_a_x.value = Math.random();
+                this.ave_a_y.time = now;
+                this.ave_a_y.value = Math.random();
+                this.ave_a_z.time = now;
+                this.ave_a_z.value = Math.random();
+
+                this.chart.data.datasets[0].data.push({x: this.ave_a_x.time, y: this.ave_a_x.value});
+            },
             connect: function(){
                 navigator.bluetooth.requestDevice({
                     filters: [{
@@ -211,7 +250,7 @@
                         this.characteristic.startNotifications();
                         this.characteristic.addEventListener('characteristicvaluechanged',this.onAccelerometerValueChanged);
 
-                        chara[1].writeValue(new Uint16Array([this.INTERVAL])); // period
+                        chara[1].writeValue(new Uint16Array([this.INTERVAL * 2])); // period
 
                         this.chara_button_a = chara[2];
                         this.chara_button_a.startNotifications();
@@ -258,9 +297,13 @@
                                 tmp_a_z.push(elm);
                             });
 
-                            this.ave_a_x = this.average(tmp_a_x);
-                            this.ave_a_y = this.average(tmp_a_y);
-                            this.ave_a_z = this.average(tmp_a_z);
+                            let now = Date.now();
+                            this.ave_a_x.time = now;
+                            this.ave_a_x.value = this.average(tmp_a_x);
+                            this.ave_a_y.time = now;
+                            this.ave_a_y.value = this.average(tmp_a_y);
+                            this.ave_a_z.time = now;
+                            this.ave_a_z.value = this.average(tmp_a_z);
 
                             // reduce to recent 20 elements
                             if (this.total_a_x.length > 20) {
@@ -295,6 +338,11 @@
                 this.total_a_x.push(this.a_x);
                 this.total_a_y.push(this.a_y);
                 this.total_a_z.push(this.a_z);
+
+                let now = Date.now();
+                this.chart.data.datasets[0].data.push({x: now, y: this.a_x});
+                this.chart.data.datasets[1].data.push({x: now, y: this.a_y});
+                this.chart.data.datasets[2].data.push({x: now, y: this.a_z});
             },
             onTemperaturChanged: function(event) {
                 this.temperature = event.target.value.getUint8(0, true);
@@ -333,7 +381,16 @@
                         return prev+current;
                     });
                 }
+            },
+            onRefresh: function (chart) {
+                this.chart.data.datasets.forEach(function(dataset) {
+                    // dataset.data.push({
+                    //     x: Date.now(),
+                    //     y: Math.random()
+                    // });
+                });
             }
+
         }
     }
 </script>
