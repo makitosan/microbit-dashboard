@@ -41,6 +41,11 @@
             </div>
         </div><!-- //card mt-5-->
 
+        <div>
+            <canvas id="myChart" ref="mychart"></canvas>
+        </div>
+
+
         <div class="card mt-5">
             <div class="card-header">
                 A/B Button
@@ -99,28 +104,29 @@
 <script>
     export default {
         created() {
-            let ctx = document.getElementById('myChart').getContext('2d');
-            this.chart = new Chart(ctx, {
-                type: 'line',
-                data: { datasets: [
-                        { label: 'x',
-                            borderColor: 'rgb(255, 0, 0)',
-                            data: [] },
-                        { label: 'y',
-                            borderColor: 'rgb(0, 255, 0)',
-                            data: [] },
-                        { label: 'z',
-                            borderColor: 'rgb(0, 0, 255)',
-                            data: []}
-                    ] },
-                options: {
-                    scales: { xAxes: [{ type: 'realtime' }] },
-                    plugins: { streaming: { onRefresh: this.onRefresh, delay: 2000 } }
-                }
-            });
         },
         mounted() {
             console.log('Component mounted.')
+            this.$nextTick(function (){
+                this.chart = new Chart(this.$refs.mychart, {
+                    type: 'line',
+                    data: { datasets: [
+                            { label: 'x',
+                                borderColor: 'rgb(255, 0, 0)',
+                                data: [] },
+                            { label: 'y',
+                                borderColor: 'rgb(0, 255, 0)',
+                                data: [] },
+                            { label: 'z',
+                                borderColor: 'rgb(0, 0, 255)',
+                                data: []}
+                        ] },
+                    options: {
+                        scales: { xAxes: [{ type: 'realtime' }] },
+                        plugins: { streaming: { onRefresh: this.onRefresh, delay: 2000 } }
+                    }
+                });
+            });
         },
         data() {
             return {

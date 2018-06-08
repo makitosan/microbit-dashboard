@@ -12,18 +12,13 @@
 
     <title>mirobit: web bluetooth API example</title>
 
-    <script>
-        var ave_a_x = {time: Date.now(), value: Math.random()};
-    </script>
-
 </head>
 
 <body>
 <div id="app">
-    <ble-viewer :ave_a_x="ave_a_x"></ble-viewer>
+    <ble-viewer></ble-viewer>
 </div><!-- // #app end -->
 <div class="container">
-    <canvas id="myChart"></canvas>
 
 </div>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.0/moment.min.js"></script>
