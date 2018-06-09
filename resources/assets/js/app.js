@@ -27,11 +27,11 @@ const app = new Vue({
  * font-awesome integration read the following article
  * https://stackoverflow.com/questions/49304017/install-font-awesome-5-with-npm-for-scss-usage/49328677#49328677
  */
-import fontawesome from '@fortawesome/fontawesome'
-import regular from '@fortawesome/fontawesome-free-regular'
-import solid from '@fortawesome/fontawesome-free-solid'
-import brands from '@fortawesome/fontawesome-free-brands'
-
-fontawesome.library.add(regular)
-fontawesome.library.add(solid)
-fontawesome.library.add(brands)
+// import fontawesome from '@fortawesome/fontawesome'
+// import regular from '@fortawesome/fontawesome-free-regular'
+// import solid from '@fortawesome/fontawesome-free-solid'
+// import brands from '@fortawesome/fontawesome-free-brands'
+//
+// fontawesome.library.add(regular)
+// fontawesome.library.add(solid)
+// fontawesome.library.add(brands)
