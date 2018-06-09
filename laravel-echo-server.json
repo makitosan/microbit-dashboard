@@ -15,7 +15,7 @@
 		}
 	},
 	"devMode": true,
-	"host": null,
+	"host": "microbitdashboard.herokuapp.com",
 	"port": "6001",
 	"protocol": "http",
 	"socketio": {},
