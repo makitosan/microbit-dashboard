@@ -191,20 +191,7 @@
 
                 // invoke save API
                 console.log('data API fired...');
-                let payload = {
-                    text: Date.now(),
-                    time: this.ave_a_x.time,
-                    ave_a_x: this.ave_a_x.value,
-                    ave_a_y: this.ave_a_y.value,
-                    ave_a_z: this.ave_a_z.value
-                };
-                this.$http.post('/api/data', payload)
-                    .then(res =>  {
-                        console.log(res.data);
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    });
+                this.postData();
             },
             connect: function(){
                 navigator.bluetooth.requestDevice({
@@ -323,20 +310,7 @@
 
                             // invoke save API
                             console.log('data API fired...');
-                            let payload = {
-                                message: Date.now(),
-                                time: this.ave_a_x.time,
-                                ave_a_x: this.ave_a_x.value,
-                                ave_a_y: this.ave_a_y.value,
-                                ave_a_z: this.ave_a_z.value
-                            };
-                            this.$http.post('/api/data', JSON.stringify(payload))
-                                .then(res =>  {
-                                    console.log(res.data);
-                                })
-                                .catch(error => {
-                                    console.log(error);
-                                });
+                            this.postData();
 
                         }.bind(this), 10000);
                     })
@@ -402,6 +376,21 @@
                         return prev+current;
                     });
                 }
+            },
+            postData: function() {
+                let payload = {
+                    time: this.ave_a_x.time,
+                    ave_a_x: this.ave_a_x.value,
+                    ave_a_y: this.ave_a_y.value,
+                    ave_a_z: this.ave_a_z.value
+                };
+                this.$http.post('/api/data', payload)
+                    .then(res =>  {
+                        console.log(res.data);
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
             }
         }
     }

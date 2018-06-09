@@ -110,33 +110,16 @@
                         ] },
                     options: {
                         scales: { xAxes: [{ type: 'realtime' }] },
-                        plugins: { streaming: { onRefresh: this.onRefresh, delay: 30000, duration: 60000 } }
+                        plugins: { streaming: { onRefresh: this.onRefresh, delay: 30000, duration: 180000 } }
                     }
                 });
             });
-
+            // initialize data
+            this.getLatest();
             this.intervalid = setInterval(function(){
                 console.log('interval fired...');
                 // http get API
-                this.$http.get('/api/data/latest')
-                    .then(res =>  {
-                        console.log(res.data);
-                        this.ave_a_x.time = res.data.time;
-                        this.ave_a_x.value = res.data.ave_a_x;
-                        this.ave_a_y.time = res.data.time;
-                        this.ave_a_y.value = res.data.ave_a_y;
-                        this.ave_a_z.time = res.data.time;
-                        this.ave_a_z.value = res.data.ave_a_z;
-
-                        this.chart.data.datasets[0].data.push({x: new Date(res.data.time), y: res.data.ave_a_x});
-                        this.chart.data.datasets[1].data.push({x: new Date(res.data.time), y: res.data.ave_a_y});
-                        this.chart.data.datasets[2].data.push({x: new Date(res.data.time), y: res.data.ave_a_z});
-
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    });
-                // invoke save API
+                this.getLatest();
             }.bind(this), 10000);
         },
         data() {
@@ -188,6 +171,26 @@
                     // });
                 });
             },
+            getLatest: function() {
+                this.$http.get('/api/data/latest')
+                    .then(res =>  {
+                        console.log(res.data);
+                        this.ave_a_x.time = res.data.time;
+                        this.ave_a_x.value = res.data.ave_a_x;
+                        this.ave_a_y.time = res.data.time;
+                        this.ave_a_y.value = res.data.ave_a_y;
+                        this.ave_a_z.time = res.data.time;
+                        this.ave_a_z.value = res.data.ave_a_z;
+
+                        this.chart.data.datasets[0].data.push({x: new Date(res.data.time), y: res.data.ave_a_x});
+                        this.chart.data.datasets[1].data.push({x: new Date(res.data.time), y: res.data.ave_a_y});
+                        this.chart.data.datasets[2].data.push({x: new Date(res.data.time), y: res.data.ave_a_z});
+
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            }
         }
     }
 </script>
