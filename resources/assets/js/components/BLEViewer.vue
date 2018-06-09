@@ -112,12 +112,18 @@
                     type: 'line',
                     data: { datasets: [
                             { label: 'x',
+                                pointRadius: 1,
+                                borderWidth: 1,
                                 borderColor: 'rgb(255, 0, 0)',
                                 data: [] },
                             { label: 'y',
+                                pointRadius: 1,
+                                borderWidth: 1,
                                 borderColor: 'rgb(0, 255, 0)',
                                 data: [] },
                             { label: 'z',
+                                pointRadius: 1,
+                                borderWidth: 1,
                                 borderColor: 'rgb(0, 0, 255)',
                                 data: []}
                         ] },
@@ -131,12 +137,18 @@
                     type: 'line',
                     data: { datasets: [
                             { label: 'x',
+                                pointRadius: 1,
+                                borderWidth: 1,
                                 borderColor: 'rgb(255, 0, 0)',
                                 data: [] },
                             { label: 'y',
+                                pointRadius: 1,
+                                borderWidth: 1,
                                 borderColor: 'rgb(0, 255, 0)',
                                 data: [] },
                             { label: 'z',
+                                pointRadius: 1,
+                                borderWidth: 1,
                                 borderColor: 'rgb(0, 0, 255)',
                                 data: []}
                         ] },
@@ -150,6 +162,8 @@
                     type: 'line',
                     data: { datasets: [
                             { label: 'temperature',
+                                pointRadius: 1,
+                                borderWidth: 1,
                                 borderColor: 'rgb(255, 0, 0)',
                                 data: [] }
                         ] },
@@ -163,6 +177,8 @@
                     type: 'line',
                     data: { datasets: [
                             { label: 'bearing',
+                                pointRadius: 1,
+                                borderWidth: 1,
                                 borderColor: 'rgb(255, 0, 0)',
                                 data: [] }
                         ] },
