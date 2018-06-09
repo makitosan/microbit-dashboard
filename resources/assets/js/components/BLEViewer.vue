@@ -123,7 +123,7 @@
                         ] },
                     options: {
                         scales: { xAxes: [{ type: 'realtime' }] },
-                        plugins: { streaming: { onRefresh: this.onRefresh, delay: 30000, duration: 180000 } }
+                        plugins: { streaming: { onRefresh: this.onRefresh, delay: 30000, duration: 1800000 } }
                     }
                 });
 
@@ -142,7 +142,7 @@
                         ] },
                     options: {
                         scales: { xAxes: [{ type: 'realtime' }] },
-                        plugins: { streaming: { onRefresh: this.onRefresh, delay: 30000, duration: 180000 } }
+                        plugins: { streaming: { onRefresh: this.onRefresh, delay: 30000, duration: 1800000 } }
                     }
                 });
 
@@ -155,7 +155,7 @@
                         ] },
                     options: {
                         scales: { xAxes: [{ type: 'realtime' }] },
-                        plugins: { streaming: { onRefresh: this.onRefresh, delay: 30000, duration: 180000 } }
+                        plugins: { streaming: { onRefresh: this.onRefresh, delay: 30000, duration: 1800000 } }
                     }
                 });
 
@@ -168,7 +168,7 @@
                         ] },
                     options: {
                         scales: { xAxes: [{ type: 'realtime' }] },
-                        plugins: { streaming: { onRefresh: this.onRefresh, delay: 30000, duration: 180000 } }
+                        plugins: { streaming: { onRefresh: this.onRefresh, delay: 30000, duration: 1800000 } }
                     }
                 });
             });
