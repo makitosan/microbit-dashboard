@@ -152,12 +152,25 @@
                 button_a: 0,
                 button_b: 0,
 
+                ave_temperature: {time: Date.now(), value: 0},
                 temperature: 0,
+                total_temperature: [],
 
+                ave_bearing: {time: Date.now(), value: 0},
                 bearing: 0,
+                total_bearing: [],
+
                 mag_x: 0,
                 mag_y: 0,
                 mag_z: 0,
+
+                ave_mag_x : {time: Date.now(), value: 0},
+                ave_mag_y : {time: Date.now(), value: 0},
+                ave_mag_z : {time: Date.now(), value: 0},
+
+                total_mag_x: [],
+                total_mag_y: [],
+                total_mag_z: [],
 
                 p0: 0,
                 p1: 0,
@@ -277,17 +290,15 @@
                             console.log(this.total_a_y);
                             console.log(this.total_a_z);
 
-                            // calc average
-                            let tmp_a_x = [], tmp_a_y = [], tmp_a_z = [];
-                            this.total_a_x.forEach(function(elm) {
-                                tmp_a_x.push(elm);
-                            });
-                            this.total_a_y.forEach(function(elm) {
-                                tmp_a_y.push(elm);
-                            });
-                            this.total_a_z.forEach(function(elm) {
-                                tmp_a_z.push(elm);
-                            });
+                            // copy array (since can be changed during calcuration)
+                            let tmp_a_x = this.total_a_x.slice();
+                            let tmp_a_y = this.total_a_y.slice();
+                            let tmp_a_z = this.total_a_z.slice();
+                            let tmp_mag_x = this.total_mag_x.slice();
+                            let tmp_mag_y = this.total_mag_y.slice();
+                            let tmp_mag_z = this.total_mag_z.slice();
+                            let tmp_temperature = this.total_temperature.slice();
+                            let tmp_bearing = this.total_bearing.slice();
 
                             let now = Date.now();
                             this.ave_a_x.time = now;
@@ -296,17 +307,28 @@
                             this.ave_a_y.value = this.average(tmp_a_y);
                             this.ave_a_z.time = now;
                             this.ave_a_z.value = this.average(tmp_a_z);
+                            // mag
+                            this.ave_mag_x.time = now;
+                            this.ave_mag_x.value = this.average(tmp_mag_x);
+                            this.ave_mag_y.time = now;
+                            this.ave_mag_y.value = this.average(tmp_mag_y);
+                            this.ave_mag_z.time = now;
+                            this.ave_mag_z.value = this.average(tmp_mag_z);
+                            // temperature and bearing
+                            this.ave_temperature.time = now;
+                            this.ave_temperature.value = this.average(tmp_temperature);
+                            this.ave_bearing.time = now;
+                            this.ave_bearing.value = this.average(tmp_bearing);
 
                             // reduce to recent 20 elements
-                            if (this.total_a_x.length > 20) {
-                                this.total_a_x.splice(0, this.total_a_x.length - 20);
-                            }
-                            if (this.total_a_y.length > 20) {
-                                this.total_a_y.splice(0, this.total_a_y.length - 20);
-                            }
-                            if (this.total_a_z.length > 20) {
-                                this.total_a_z.splice(0, this.total_a_z.length - 20);
-                            }
+                            if (this.total_a_x.length > 20) this.total_a_x.splice(0, this.total_a_x.length - 20);
+                            if (this.total_a_y.length > 20) this.total_a_y.splice(0, this.total_a_y.length - 20);
+                            if (this.total_a_z.length > 20) this.total_a_z.splice(0, this.total_a_z.length - 20);
+                            if (this.total_mag_x.length > 20) this.total_mag_x.splice(0, this.total_mag_x.length - 20);
+                            if (this.total_mag_y.length > 20) this.total_mag_y.splice(0, this.total_mag_y.length - 20);
+                            if (this.total_mag_z.length > 20) this.total_mag_z.splice(0, this.total_mag_z.length - 20);
+                            if (this.total_temperature.length > 20) this.total_temperature.splice(0, this.total_temperature.length - 20);
+                            if (this.total_bearing.length > 20) this.total_bearing.splice(0, this.total_bearing.length - 20);
 
                             // invoke save API
                             console.log('data API fired...');
@@ -382,7 +404,12 @@
                     time: this.ave_a_x.time,
                     ave_a_x: this.ave_a_x.value,
                     ave_a_y: this.ave_a_y.value,
-                    ave_a_z: this.ave_a_z.value
+                    ave_a_z: this.ave_a_z.value,
+                    ave_mag_x: this.ave_mag_x.value,
+                    ave_mag_y: this.ave_mag_y.value,
+                    ave_mag_z: this.ave_mag_z.value,
+                    ave_temperature: this.ave_temperature.value,
+                    ave_bearing: this.ave_bearing.value
                 };
                 this.$http.post('/api/data', payload)
                     .then(res =>  {

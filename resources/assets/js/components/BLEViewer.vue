@@ -9,21 +9,41 @@
             </div>
         </div><!-- //card mt-5-->
 
-        <div class="card mt-5">
-            <div class="card-header">
-                加速度センサー
-            </div>
-            <div class="card-body">
-                <div class="row mt-1">
-                    <div class="mx-1 col border border-primary rounded text-right">{{ave_a_x.value}}</div>
-                    <div class="mx-1 col border border-primary rounded text-right">{{ave_a_y.value}}</div>
-                    <div class="mx-1 col border border-primary rounded text-right">{{ave_a_z.value}}</div>
+        <div class="card-deck mt-5">
+            <div class="card">
+                <div class="card-header">
+                    加速度センサー
                 </div>
-                <div>
-                    <canvas id="myChart" ref="mychart"></canvas>
+                <div class="card-body">
+                    <div class="row mt-1">
+                        <div class="px-1 col-4"><div class="border border-primary rounded text-right text-truncate">{{ave_a_x.value}}</div></div>
+                        <div class="px-1 col-4"><div class="border border-primary rounded text-right text-truncate">{{ave_a_y.value}}</div></div>
+                        <div class="px-1 col-4"><div class="border border-primary rounded text-right text-truncate">{{ave_a_z.value}}</div></div>
+                    </div>
+                    <div>
+                        <canvas id="myChart" ref="mychart"></canvas>
+                    </div>
                 </div>
-            </div>
-        </div><!-- //card mt-5-->
+            </div><!-- //card-->
+
+            <div class="card">
+                <div class="card-header">
+                    地磁気センサー / コンパス
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="mx-1 col border border-primary rounded text-right">{{mag_x}}</div>
+                        <div class="mx-1 col border border-primary rounded text-right">{{mag_y}}</div>
+                        <div class="mx-1 col border border-primary rounded text-right">{{mag_z}}</div>
+                    </div>
+                    <div class="row mt-1">
+                        <div class="mx-1 col border border-primary rounded text-right">{{bearing}}</div>
+                    </div>
+                </div>
+            </div><!-- //card mt-5-->
+
+
+        </div><!-- // row -->
 
         <div class="card mt-5">
             <div class="card-header">
@@ -36,21 +56,6 @@
             </div>
         </div><!-- //card mt-5-->
 
-        <div class="card mt-5">
-            <div class="card-header">
-                地磁気センサー / コンパス
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="mx-1 col border border-primary rounded text-right">{{mag_x}}</div>
-                    <div class="mx-1 col border border-primary rounded text-right">{{mag_y}}</div>
-                    <div class="mx-1 col border border-primary rounded text-right">{{mag_z}}</div>
-                </div>
-                <div class="row mt-1">
-                    <div class="mx-1 col border border-primary rounded text-right">{{bearing}}</div>
-                </div>
-            </div>
-        </div><!-- //card mt-5-->
 
         <div class="card mt-5">
             <div class="card-header">
