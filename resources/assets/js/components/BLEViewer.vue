@@ -32,9 +32,9 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="mx-1 col border border-primary rounded text-right">{{mag_x}}</div>
-                        <div class="mx-1 col border border-primary rounded text-right">{{mag_y}}</div>
-                        <div class="mx-1 col border border-primary rounded text-right">{{mag_z}}</div>
+                        <div class="px-1 col-4"><div class="border border-primary rounded text-right text-truncate">{{mag_x}}</div></div>
+                        <div class="px-1 col-4"><div class="border border-primary rounded text-right text-truncate">{{mag_y}}</div></div>
+                        <div class="px-1 col-4"><div class="border border-primary rounded text-right text-truncate">{{mag_z}}</div></div>
                     </div>
                     <div>
                         <canvas id="chart_mag" ref="mychart_mag"></canvas>
