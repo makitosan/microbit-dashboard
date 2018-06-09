@@ -11,6 +11,10 @@
 |
 */
 
+Route::get('/device/{id}', function ($id = 'dummy_id') {
+    return view('device');
+});
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 });

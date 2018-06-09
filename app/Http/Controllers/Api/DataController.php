@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Events\MessageRecieved;
 use Illuminate\Http\Request;
 
@@ -17,7 +18,13 @@ class DataController extends Controller
             'text' => 'required|max:255'
         ]);
 
-        $messages = [['text' => $request->text]];
+        $messages = [[
+            'time' => $request->time,
+            'text' => $request->text,
+            'ave_a_x' => $request->ave_a_x,
+            'ave_a_y' => $request->ave_a_y,
+            'ave_a_z' => $request->ave_a_z
+            ]];
 
         event(new MessageRecieved($messages));
 

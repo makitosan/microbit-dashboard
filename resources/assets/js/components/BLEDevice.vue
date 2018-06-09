@@ -41,11 +41,6 @@
             </div>
         </div><!-- //card mt-5-->
 
-        <div>
-            <canvas id="myChart" ref="mychart"></canvas>
-        </div>
-
-
         <div class="card mt-5">
             <div class="card-header">
                 A/B Button
@@ -107,27 +102,16 @@
         },
         mounted() {
             console.log('Component mounted.')
-            this.$nextTick(function (){
-                this.chart = new Chart(this.$refs.mychart, {
-                    type: 'line',
-                    data: { datasets: [
-                            { label: 'x',
-                                borderColor: 'rgb(255, 0, 0)',
-                                data: [] },
-                            { label: 'y',
-                                borderColor: 'rgb(0, 255, 0)',
-                                data: [] },
-                            { label: 'z',
-                                borderColor: 'rgb(0, 0, 255)',
-                                data: []}
-                        ] },
-                    options: {
-                        scales: { xAxes: [{ type: 'realtime' }] },
-                        plugins: { streaming: { onRefresh: this.onRefresh, delay: 2000 } }
-                    }
-                });
-            });
-            this.connectChannel();
+            this.intervalid_heartbeat = setInterval(function(){
+                console.log('heartbeat fired...');
+                this.$http.post('/api/heartbeat')
+                    .then(res =>  {
+                        console.log(res.data);
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            }.bind(this), 60000);
         },
         data() {
             return {
@@ -152,8 +136,6 @@
                 IO_PIN_DATA_CHARACTERISTIC_UUID : 'e95d8d00-251d-470a-a062-fa1922dfa9a8',
 
                 INTERVAL : 500, // interval msec for receiving event
-
-                chart: null,
 
                 a_x : 0,
                 a_y : 0,
@@ -193,7 +175,8 @@
 
                 accelerometer_device: null,
 
-                intervalid: 0
+                intervalid: 0,
+                intervalid_heartbeat: 0
             }
         },
         methods: {
@@ -206,7 +189,22 @@
                 this.ave_a_z.time = now;
                 this.ave_a_z.value = Math.random();
 
-                this.chart.data.datasets[0].data.push({x: this.ave_a_x.time, y: this.ave_a_x.value});
+                // invoke save API
+                console.log('data API fired...');
+                let payload = {
+                    text: Date.now(),
+                    time: this.ave_a_x.time,
+                    ave_a_x: this.ave_a_x.value,
+                    ave_a_y: this.ave_a_y.value,
+                    ave_a_z: this.ave_a_z.value
+                };
+                this.$http.post('/api/data', payload)
+                    .then(res =>  {
+                        console.log(res.data);
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
             },
             connect: function(){
                 navigator.bluetooth.requestDevice({
@@ -324,6 +322,22 @@
                             }
 
                             // invoke save API
+                            console.log('data API fired...');
+                            let payload = {
+                                message: Date.now(),
+                                time: this.ave_a_x.time,
+                                ave_a_x: this.ave_a_x.value,
+                                ave_a_y: this.ave_a_y.value,
+                                ave_a_z: this.ave_a_z.value
+                            };
+                            this.$http.post('/api/data', JSON.stringify(payload))
+                                .then(res =>  {
+                                    console.log(res.data);
+                                })
+                                .catch(error => {
+                                    console.log(error);
+                                });
+
                         }.bind(this), 10000);
                     })
                     .catch(error => {
@@ -345,6 +359,11 @@
                 this.total_a_x.push(this.a_x);
                 this.total_a_y.push(this.a_y);
                 this.total_a_z.push(this.a_z);
+
+                let now = Date.now();
+                this.chart.data.datasets[0].data.push({x: now, y: this.a_x});
+                this.chart.data.datasets[1].data.push({x: now, y: this.a_y});
+                this.chart.data.datasets[2].data.push({x: now, y: this.a_z});
             },
             onTemperaturChanged: function(event) {
                 this.temperature = event.target.value.getUint8(0, true);
@@ -383,27 +402,6 @@
                         return prev+current;
                     });
                 }
-            },
-            onRefresh: function (chart) {
-                this.chart.data.datasets.forEach(function(dataset) {
-                    // dataset.data.push({
-                    //     x: Date.now(),
-                    //     y: Math.random()
-                    // });
-                });
-            },
-            connectChannel() {
-                Echo.channel("microbit").listen("MessageRecieved", e => {
-                    console.log(e);
-                    this.recieveMessage(e.messages);
-                });
-            },
-            recieveMessage(messages) {
-                messages.forEach(function(ele){
-                    this.chart.data.datasets[0].data.push({x: new Date(ele.time), y: ele.ave_a_x});
-                    this.chart.data.datasets[1].data.push({x: new Date(ele.time), y: ele.ave_a_y});
-                    this.chart.data.datasets[2].data.push({x: new Date(ele.time), y: ele.ave_a_z});
-                });
             }
         }
     }
