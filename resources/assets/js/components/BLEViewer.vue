@@ -199,7 +199,7 @@
                             this.chart.data.datasets[0].data.push({x: new Date(elem.time), y: elem.ave_a_x});
                             this.chart.data.datasets[1].data.push({x: new Date(elem.time), y: elem.ave_a_y});
                             this.chart.data.datasets[2].data.push({x: new Date(elem.time), y: elem.ave_a_z});
-                        });
+                        }, this);
 
                     })
                     .catch(error => {
