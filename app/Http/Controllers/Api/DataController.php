@@ -45,4 +45,18 @@ class DataController extends Controller
         $microbit_data = MicrobitData::orderBy('time', 'desc')->first();
         return response()->json($microbit_data->data);
     }
+
+    /**
+     * Retrieve the latest 20 data
+     */
+    public function recent() {
+        // get data from redis, if it returns empty, then get data from DB
+        $microbit_datas = MicrobitData::orderBy('time', 'desc')->limit(20)->get();
+        $datas = [];
+        foreach($microbit_datas as $data) {
+            $datas[] = $data->data;
+        }
+        return response()->json($datas);
+    }
+
 }

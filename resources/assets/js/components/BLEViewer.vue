@@ -115,7 +115,7 @@
                 });
             });
             // initialize data
-            this.getLatest();
+            this.getRecent();
             this.intervalid = setInterval(function(){
                 console.log('interval fired...');
                 // http get API
@@ -185,6 +185,21 @@
                         this.chart.data.datasets[0].data.push({x: new Date(res.data.time), y: res.data.ave_a_x});
                         this.chart.data.datasets[1].data.push({x: new Date(res.data.time), y: res.data.ave_a_y});
                         this.chart.data.datasets[2].data.push({x: new Date(res.data.time), y: res.data.ave_a_z});
+
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            },
+            getRecent: function() {
+                this.$http.get('/api/data/recent')
+                    .then(res =>  {
+                        console.log(res.data);
+                        res.data.forEach(function(elem){
+                            this.chart.data.datasets[0].data.push({x: new Date(elem.time), y: elem.ave_a_x});
+                            this.chart.data.datasets[1].data.push({x: new Date(elem.time), y: elem.ave_a_y});
+                            this.chart.data.datasets[2].data.push({x: new Date(elem.time), y: elem.ave_a_z});
+                        });
 
                     })
                     .catch(error => {

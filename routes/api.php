@@ -22,4 +22,5 @@ Route::namespace('Api')->group(function() {
     Route::post('/data', 'DataController@store');
 
     Route::get('/data/latest', 'DataController@latest');
+    Route::get('/data/recent', 'DataController@recent');
 });
