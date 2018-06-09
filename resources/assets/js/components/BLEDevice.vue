@@ -355,14 +355,10 @@
                 this.total_a_x.push(this.a_x);
                 this.total_a_y.push(this.a_y);
                 this.total_a_z.push(this.a_z);
-
-                let now = Date.now();
-                this.chart.data.datasets[0].data.push({x: now, y: this.a_x});
-                this.chart.data.datasets[1].data.push({x: now, y: this.a_y});
-                this.chart.data.datasets[2].data.push({x: now, y: this.a_z});
             },
             onTemperaturChanged: function(event) {
                 this.temperature = event.target.value.getUint8(0, true);
+                this.total_temperature.push(this.temperature);
             },
             onchangeABtn: function(event) {
                 let swd = event.target.value.getUint8(0, true);
@@ -376,9 +372,15 @@
                 this.mag_x = event.target.value.getUint16(0)/1000.0;
                 this.mag_y = event.target.value.getUint16(2)/1000.0;
                 this.mag_z = event.target.value.getUint16(4)/1000.0;
+
+                this.total_mag_x.push(this.mag_x);
+                this.total_mag_y.push(this.mag_y);
+                this.total_mag_z.push(this.mag_z);
             },
             onCompassChanged: function(event) {
                 this.bearing = event.target.value.getUint16(0, true);
+
+                this.total_bearing.push(this.bearing);
             },
             onIOPinChanged: function(event) {
                 console.log(event);
