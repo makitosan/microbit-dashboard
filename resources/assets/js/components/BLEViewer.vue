@@ -2,22 +2,16 @@
     <div class="container">
         <div class="card mt-5">
             <div class="card-header">
-                CONNECT / DISCONNECT
+                About micro:bit Dashboard
             </div>
             <div class="card-body">
-                <form>
-                    <div class="form-row">
-                        <div class="col">
-                            <button type="button" class="btn btn-primary btn-block" v-on:click="addData">ADD DATA</button>
-                        </div>
-                    </div>
-                </form>
+                <div class="card-text">このダッシュボードはとある micro:bit のセンサーデータを取得し表示しています。</div>
             </div>
         </div><!-- //card mt-5-->
 
         <div class="card mt-5">
             <div class="card-header">
-                Accelerator
+                加速度センサー
             </div>
             <div class="card-body">
                 <div class="row mt-1">
@@ -25,29 +19,15 @@
                     <div class="mx-1 col border border-primary rounded text-right">{{ave_a_y.value}}</div>
                     <div class="mx-1 col border border-primary rounded text-right">{{ave_a_z.value}}</div>
                 </div>
-            </div>
-        </div><!-- //card mt-5-->
-
-        <div>
-            <canvas id="myChart" ref="mychart"></canvas>
-        </div>
-
-
-        <div class="card mt-5">
-            <div class="card-header">
-                A/B Button
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="mx-1 col border border-danger rounded text-right">{{button_a}}</div>
-                    <div class="mx-1 col border border-danger rounded text-right">{{button_b}}</div>
+                <div>
+                    <canvas id="myChart" ref="mychart"></canvas>
                 </div>
             </div>
         </div><!-- //card mt-5-->
 
         <div class="card mt-5">
             <div class="card-header">
-                Temperatue
+                温度センサー
             </div>
             <div class="card-body">
                 <div class="row">
@@ -58,7 +38,7 @@
 
         <div class="card mt-5">
             <div class="card-header">
-                Magnetometer / Compass
+                地磁気センサー / コンパス
             </div>
             <div class="card-body">
                 <div class="row">
@@ -68,6 +48,18 @@
                 </div>
                 <div class="row mt-1">
                     <div class="mx-1 col border border-primary rounded text-right">{{bearing}}</div>
+                </div>
+            </div>
+        </div><!-- //card mt-5-->
+
+        <div class="card mt-5">
+            <div class="card-header">
+                A/B Button
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="mx-1 col border border-danger rounded text-right">{{button_a}}</div>
+                    <div class="mx-1 col border border-danger rounded text-right">{{button_b}}</div>
                 </div>
             </div>
         </div><!-- //card mt-5-->
