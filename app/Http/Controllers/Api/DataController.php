@@ -16,12 +16,11 @@ class DataController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'text' => 'required|max:255'
+            'time' => 'required|numeric'
         ]);
 
         $messages = [[
             'time' => $request->time,
-            'text' => $request->text,
             'ave_a_x' => $request->ave_a_x,
             'ave_a_y' => $request->ave_a_y,
             'ave_a_z' => $request->ave_a_z
