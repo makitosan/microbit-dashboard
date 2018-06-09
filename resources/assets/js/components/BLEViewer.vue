@@ -187,6 +187,12 @@
                 this.$http.get('/api/data/recent')
                     .then(res =>  {
                         console.log(res.data);
+                        // order by time data
+                        res.data.sort(function(a,b){
+                            if( a.time < b.time ) return -1;
+                            if( a.time > b.time ) return 1;
+                            return 0;
+                        });
                         res.data.forEach(function(elem){
                             this.chart.data.datasets[0].data.push({x: new Date(elem.time), y: elem.ave_a_x});
                             this.chart.data.datasets[1].data.push({x: new Date(elem.time), y: elem.ave_a_y});
