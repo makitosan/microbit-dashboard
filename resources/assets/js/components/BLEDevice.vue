@@ -284,6 +284,10 @@
                         this.io_pin.startNotifications();
                         this.io_pin.addEventListener('characteristicvaluechanged',this.onIOPinChanged);
 
+                        if (this.intervalid && this.intervalid != 0) {
+                            // reset before create new interval
+                            clearInterval(this.intervalid);
+                        }
                         this.intervalid = setInterval(function(){
                             console.log('interval fired...');
                             console.log(this.total_a_x);
