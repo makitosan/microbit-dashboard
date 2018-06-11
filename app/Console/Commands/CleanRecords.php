@@ -7,6 +7,8 @@ use Illuminate\Console\Command;
 
 class CleanRecords extends Command
 {
+    const RECORD_LIFE_TIME = 21600 * 1000;
+
     /**
      * The name and signature of the console command.
      *
@@ -40,6 +42,6 @@ class CleanRecords extends Command
     {
         $milliseconds = round(microtime(true) * 1000);
         // remove 24hr old data
-        MicrobitData::where('time', '<', ($milliseconds - 86400 * 1000))->delete();
+        MicrobitData::where('time', '<', ($milliseconds - self::RECORD_LIFE_TIME))->delete();
     }
 }
