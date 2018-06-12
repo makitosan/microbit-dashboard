@@ -15,6 +15,10 @@ Route::get('/device/{id}', function ($id = 'dummy_id') {
     return view('device');
 });
 
+Route::get('/reg', function () {
+    return view('device_registration');
+});
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 });

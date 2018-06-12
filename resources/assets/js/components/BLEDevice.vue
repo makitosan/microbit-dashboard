@@ -348,7 +348,7 @@
             disconnect: function() {
                 if (!this.accelerometer_device || !this.accelerometer_device.gatt.connected) return ;
                 this.accelerometer_device.gatt.disconnect();
-                alert("BLE connection disconnected ;)");
+                alert("BLE connection disconnected oxo");
                 clearInterval(this.intervalid);
             },
             onAccelerometerValueChanged: function(event) {

@@ -18,6 +18,8 @@ window.Vue = require('vue');
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 Vue.component('ble-viewer', require('./components/BLEViewer.vue'));
 Vue.component('ble-device', require('./components/BLEDevice.vue'));
+Vue.component('ble-device-registration', require('./components/BLEDeviceRegistration.vue'));
+
 
 const app = new Vue({
     el: '#app'
