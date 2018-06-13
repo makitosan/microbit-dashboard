@@ -1,8 +1,7 @@
 <template>
     <div class="container">
-        <div class="alert alert-danger" role="alert">
-            <strong>NOT WORKING</strong> Web Bluetooth API prevent you from retrieving Device Information characteristic.
-            This example try to do it, and will show the message of connection failure when CONNECT button clicked.
+        <div class="alert alert-info" role="alert">
+            <strong>READ ME</strong> This example trys to connect multiple devices.
         </div>
         <div class="card mt-5">
             <div class="card-header">
@@ -27,11 +26,23 @@
                 Device Id
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="mx-1 col border border-primary rounded text-right">{{device_id}}</div>
-                </div>
+                <ul>
+                    <li v-for="(device, index) in devices">{{index}} - {{device.id}} {{device.name}}</li>
+                </ul>
             </div>
         </div><!-- //card mt-5-->
+        <div class="card mt-5">
+            <div class="card-header">
+                TEMPERATURE
+            </div>
+            <div class="card-body">
+                <ul>
+                    <li v-for="value, key in temperatures">{{key}} {{value}}</li>
+                </ul>
+            </div>
+        </div><!-- //card mt-5-->
+
+
     </div>
 </template>
 
@@ -45,18 +56,23 @@
         data() {
             return {
                 // Serial Number Service
-                // 0000180A00001000800000805F9B34FB
-                // 00002A2500001000800000805F9B34FB
 
 
                 DEVICE_INFORMATION_SERVICE_UUID         : '0000180a-0000-1000-8000-00805f9b34fb',
-                DEVICE_INFORMATION_SERIAL_NUMBER_CHARACTERISTIC_UUID : '00002a25-0000-1000-8000-00805f9b34fb',
-                device_id: '',
+                TEMPERATURE_SERVICE_UUID : 'e95d6100-251d-470a-a062-fa1922dfa9a8',
+                TEMPERATURE_CHARACTERISTIC_UUID : 'e95d9250-251d-470a-a062-fa1922dfa9a8',
+                TEMPERATUREPERIOD_CHARACTERISTIC_UUID : 'e95d1b25-251d-470a-a062-fa1922dfa9a8',
 
                 INTERVAL : 500, // interval msec for receiving event
 
                 device : null,
                 characteristic : null,
+
+                charEvents: [],
+
+                temperatures: {},
+
+                devices: [],
             }
         },
         methods: {
@@ -65,35 +81,35 @@
                     filters: [{
                         namePrefix: 'BBC micro:bit',
                     }],
-                    optionalServices: [this.DEVICE_INFORMATION_SERVICE_UUID]
+                    optionalServices: [this.DEVICE_INFORMATION_SERVICE_UUID,
+                                        this.TEMPERATURE_SERVICE_UUID]
                 })
                     .then(device => {
-                        this.device = device;
+                        this.devices.push(device);
                         return device.gatt.connect();
                     })
                     .then(server =>{
                         console.log("server", server);
                         return Promise.all([
-                            server.getPrimaryService(this.DEVICE_INFORMATION_SERVICE_UUID)
+                            server.getPrimaryService(this.DEVICE_INFORMATION_SERVICE_UUID),
+                            server.getPrimaryService(this.TEMPERATURE_SERVICE_UUID)
                         ]);
                     })
                     .then(service => {
                         console.log("service", service);
                         return Promise.all([
-                            service[0].getCharacteristic(this.DEVICE_INFORMATION_SERIAL_NUMBER_CHARACTERISTIC_UUID)
-                    ]);
+                            service[1].getCharacteristic(this.TEMPERATURE_CHARACTERISTIC_UUID),
+                            service[1].getCharacteristic(this.TEMPERATUREPERIOD_CHARACTERISTIC_UUID)
+                        ]);
                     })
                     .then(chara => {
                         console.log("chara:", chara);
                         alert("BLE Connection Established");
-                        this.characteristic = chara[0];
 
-                        this.characteristic.readValue()
-                            .then(value => {
-                                let message = value.buffer;
-                                console.log(new Uint8Array(message));
-                                this.device_id = new TextDecoder("utf-8").decode(message);
-                            });
+                        this.chara_temp = chara[0];
+                        this.chara_temp.startNotifications();
+                        this.chara_temp.addEventListener('characteristicvaluechanged', this.onChanged);
+                        chara[1].writeValue(new Uint16Array([this.INTERVAL])); // period
                     })
                     .catch(error => {
                         alert("Faild to establish BLE connection. Please try again.");
@@ -101,29 +117,18 @@
                     });
             },
             disconnect: function() {
-                if (!this.device || !this.device.gatt.connected) return ;
-                this.device.gatt.disconnect();
+                this.devices.forEach(function (device) {
+                    if (!device || !device.gatt.connected) return;
+                    device.gatt.disconnect();
+                });
+                this.devices = [];
                 alert("BLE connection disconnected ;)");
             },
-            postData: function() {
-                let payload = {
-                    time: this.ave_a_x.time,
-                    ave_a_x: this.ave_a_x.value,
-                    ave_a_y: this.ave_a_y.value,
-                    ave_a_z: this.ave_a_z.value,
-                    ave_mag_x: this.ave_mag_x.value,
-                    ave_mag_y: this.ave_mag_y.value,
-                    ave_mag_z: this.ave_mag_z.value,
-                    ave_temperature: this.ave_temperature.value,
-                    ave_bearing: this.ave_bearing.value
-                };
-                this.$http.post('/api/data', payload)
-                    .then(res =>  {
-                        console.log(res.data);
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    });
+            onChanged: function(event) {
+                // this.temperatures.set(event.target.service.device.id, event.target.value.getUint8(0, true));
+                console.log(this.temperatures);
+                this.temperatures[event.target.service.device.id] = event.target.value.getUint8(0, true);
+                this.$forceUpdate();
             }
         }
     }

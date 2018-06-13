@@ -19,6 +19,10 @@ Route::get('/reg', function () {
     return view('device_registration');
 });
 
+Route::get('/multiple', function () {
+    return view('device_multiple');
+});
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 });
